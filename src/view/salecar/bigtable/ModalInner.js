@@ -1,12 +1,32 @@
 import React, {Component} from 'react';
-import OneSmallElement from './OneSmallElement.js';
+import {connect} from 'dva';
+import _ from 'lodash';
+import {Icon} from 'antd';
 
+import OneSmallElement from './OneSmallElement.js';
+import columnsMap from './columnsMap.js';
+
+@connect(
+    ({bigtable})=>({
+        ...bigtable
+    })
+)
 export default class modalInner extends Component {
-    constructor () {
+    constructor (props) {
         super();
+        let beixuanArr = _.difference(Object.keys(columnsMap), props.columnsArr);
         this.state = {
-            arr:['A', 'B', 'C', 'D', 'E', 'F']
+            columnsArr:props.columnsArr,
+            beixuanArr:beixuanArr
         };
+    }
+
+    deloneitem (english) {
+        console.log(this.state.columnsArr);
+        this.setState({
+            columnsArr:this.state.columnsArr.filter(item=>item !== english),
+            beixuanArr:[...this.state.beixuanArr, english]
+        });
     }
     render () {
         return (
@@ -14,17 +34,22 @@ export default class modalInner extends Component {
                 <p>当前显示的列(可以拖动改变位置):</p>
                 <div className="onesmallelementbox">
                     {
-                        this.state.arr.map((item, i) => {
+                        this.state.columnsArr.map((item, i) => {
                             return (
                                 <OneSmallElement
                                     key={i}
-                                    onSortItems={(arr)=>{
+                                    onSortItems={(columnsArr)=>{
                                         this.setState({
-                                            arr
+                                            columnsArr
                                         });
                                     }}
-                                    items={this.state.arr}
+                                    items={this.state.columnsArr}
                                     sortId={i}
+                                    english={item}
+                                    chinese={columnsMap[item].title}
+                                    other={{
+                                        deloneitem:this.deloneitem.bind(this)
+                                    }}
                                 >
                                     {item}
                                 </OneSmallElement>
@@ -34,12 +59,19 @@ export default class modalInner extends Component {
                 </div>
                 <p>备选列:</p>
                 <div className='beixuanbox'>
-                    <span>发动机<b>+</b></span>
-                    <span>公里数<b>+</b></span>
-                    <span>价格<b>+</b></span>
-                    <span>燃料<b>+</b></span>
-                    <span>排放<b>+</b></span>
+                    {
+                        this.state.beixuanArr.map((item, i) => <span key={i}>
+                            {columnsMap[item].title}
+                            <b onClick={()=>{
+                                this.setState({
+                                    beixuanArr:this.state.beixuanArr.filter(_item=>_item !== item),
+                                    columnsArr:[...this.state.columnsArr, item]
+                                });
+                            }}><Icon type='plus' /></b>
+                        </span>)
+                    }
                 </div>
+                <div className="clearbox"></div>
             </div>
         );
     }
