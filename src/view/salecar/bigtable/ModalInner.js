@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {connect} from 'dva';
 import _ from 'lodash';
-import {Icon} from 'antd';
+import {Icon, Button} from 'antd';
 
 import OneSmallElement from './OneSmallElement.js';
 import columnsMap from './columnsMap.js';
@@ -16,7 +16,7 @@ export default class modalInner extends Component {
         super();
         let beixuanArr = _.difference(Object.keys(columnsMap), props.columnsArr);
         this.state = {
-            columnsArr:props.columnsArr,
+            columnsArr:props.columnsArr.slice(),
             beixuanArr:beixuanArr
         };
     }
@@ -71,7 +71,18 @@ export default class modalInner extends Component {
                         </span>)
                     }
                 </div>
+
                 <div className="clearbox"></div>
+
+                <div className='btnbox'>
+                    <Button onClick={()=>{
+                        this.props.cancelHandler(this.state.columnsArr);
+                    }}>取消</Button>
+                    <Button onClick={()=>{
+                        this.props.okHandler(this.state.columnsArr);
+                    }}>确定</Button>
+                    <div className="clearbox"></div>
+                </div>
             </div>
         );
     }

@@ -1,3 +1,5 @@
+import React from 'react';
+
 export default {
     'price': {
         'title': '价格'
@@ -6,7 +8,12 @@ export default {
         'title': '编号'
     },
     'image': {
-        'title': '图片'
+        'title': '图片',
+        'render':(txt, {id})=>{
+            return <div>
+                <img src={`/api/images/carimages_small/${id}/view/${txt}`} />
+            </div>;
+        }
     },
     'brand': {
         'title': '品牌'

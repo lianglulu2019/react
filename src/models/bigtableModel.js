@@ -1,16 +1,24 @@
 import axios from 'axios';
+import querystring from 'querystring';
 
 export default {
     namespace:'bigtable',
     state: {
         current:1,
-        columnsArr:[]
+        columnsArr:[],
+        color:'红'
     },
     reducers: {
         CHANGECOLUMNS (state, {columnsArr}) {
             return {
                 ...state,
                 columnsArr
+            };
+        },
+        CHANGERESULTS (state, {results}) {
+            return {
+                ...state,
+                results
             };
         }
     },
@@ -26,6 +34,15 @@ export default {
             const columnsArr = JSON.parse(localStorage.getItem('columns'));
             console.log('123456788');
             yield put({'type': 'CHANGECOLUMNS', columnsArr});
+            console.log(columnsArr);
+        },
+        *SETCOLUMNSTOLOCALSTORAGE ({columns}, {put}) {
+            localStorage.setItem('columns', JSON.stringify(columns));
+            yield put({'type':'GETCOLUMNSFROMLOCALSTORAGE'});
+        },
+        *INIT (action, {put}) {
+            const {results, total} = yield axios.get('/api/car').then(data => data.data);
+            yield put({'type':'CHANGERESULTS', results});
         }
     }
 };
